@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Escolar Pro - Relatórios Avançados</title>
+    <style>
+        :root {
+            --primary: #4a90e2; --success: #2ecc71; --danger: #e74c3c;
+            --dark: #2c3e50; --light: #f4f7f6; --gray: #7f8c8d;
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; background: var(--light); margin: 0; padding: 20px; color: var(--dark); }
+        .container { width: 100%; max-width: 1000px; margin: auto; }
+        
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .flex-group { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; align-items: center; }
+        
+        input, select { flex: 1; padding: 12px; border: 2px solid #ddd; border-radius: 8px; min-width: 150px; font-size: 16px; }
+        
+        button { cursor: pointer; border: none; border-radius: 8px; font-weight: bold; padding: 12px 20px; transition: 0.2s; }
+        .btn-blue { background: var(--primary); color: white; }
+        .btn-green { background: var(--success); color: white; }
+        .btn-red { background: var(--danger); color: white; }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+
+        .class-list-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
+        .class-actions { background: #ebf5ff; padding: 15px; border-radius: 10px; border: 1px dashed var(--primary); margin-bottom: 20px; display: none; }
+
+        .students-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
+        .student-card { background: white; padding: 15px; border-radius: 15px; text-align: center; border-top: 5px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background-color: #f8fafc; color: var(--gray); font-size: 0.9rem; }
+        
+        .hidden { display: none; }
+        .nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        
+        /* Estilo para filtros no relatório */
+        .filter-bar { background: #f1f5f9; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header style="text-align: center;">
+        <h1>Gestão de Comportamento</h1>
+        <div class="nav-tabs">
+            <button class="btn-outline" onclick="showSection('painel')">Painel de Lançamento</button>
+            <button class="btn-outline" onclick="showSection('relatorio')">Relatório Geral</button>
+        </div>
+    </header>
+
+    <div id="section-painel">
+        <div class="card">
+            <h3>1. Criar Nova Turma</h3>
+            <div class="flex-group">
+                <input type="text" id="classInput" placeholder="Ex: 8º Ano C">
+                <button class="btn-blue" onclick="addClass()">Criar Turma</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>2. Turmas Cadastradas</h3>
+            <div id="classListContainer"></div>
+        </div>
+
+        <div class="card">
+            <h3>3. Gerenciar Alunos e Pontos</h3>
+            <div class="flex-group">
+                <select id="classSelector" onchange="onClassChange()">
+                    <option value="">Selecione uma turma...</option>
+                </select>
+                <input type="text" id="studentInput" placeholder="Nome do Aluno">
+                <button class="btn-green" onclick="addStudent()">Adicionar Aluno</button>
+            </div>
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+            <div id="classActionsArea" class="class-actions">
+                <div class="flex-group" style="justify-content: space-between;">
+                    <strong>PONTOS COLETIVOS:</strong>
+                    <div>
+                        <button class="btn-red" onclick="updateClassPoints(-1)">-1 Todos</button>
+                        <button class="btn-green" onclick="updateClassPoints(1)">+1 Todos</button>
+                    </div>
+                </div>
+            </div>
+            <div id="studentsGrid" class="students-grid"></div>
+        </div>
+    </div>
+
+    <div id="section-relatorio" class="hidden">
+        <div class="card">
+            <h3>📊 Relatório de Desempenho</h3>
+            
+            <div class="filter-bar">
+                <div style="flex: 2;">
+                    <label style="font-size: 0.8rem; font-weight: bold;">Filtrar por Turma:</label>
+                    <select id="reportClassFilter" onchange="renderReport()" style="width: 100%; margin-top: 5px;">
+                        <option value="all">Todas as Turmas</option>
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label style="font-size: 0.8rem; font-weight: bold;">Ordenar por:</label>
+                    <select id="reportSortOrder" onchange="renderReport()" style="width: 100%; margin-top: 5px;">
+                        <option value="name">Nome (A-Z)</option>
+                        <option value="points">Pontuação (Maior p/ Menor)</option>
+                    </select>
+                </div>
+            </div>
+
+            <table id="reportTable">
+                <thead>
+                    <tr>
+                        <th>Aluno</th>
+                        <th>Turma</th>
+                        <th>Pontuação</th>
+                    </tr>
+                </thead>
+                <tbody id="reportContent"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    let classes = JSON.parse(localStorage.getItem('classes')) || [];
+    let students = JSON.parse(localStorage.getItem('students')) || [];
+
+    function saveData() {
+        localStorage.setItem('classes', JSON.stringify(classes));
+        localStorage.setItem('students', JSON.stringify(students));
+        updateClassSelectors();
+        renderClassList();
+    }
+
+    function showSection(section) {
+        document.getElementById('section-painel').classList.toggle('hidden', section !== 'painel');
+        document.getElementById('section-relatorio').classList.toggle('hidden', section !== 'relatorio');
+        if(section === 'relatorio') renderReport();
+    }
+
+    function addClass() {
+        const name = document.getElementById('classInput').value.trim();
+        if (!name) return;
+        classes.push({ id: Date.now(), name: name });
+        document.getElementById('classInput').value = "";
+        saveData();
+    }
+
+    function renderClassList() {
+        const container = document.getElementById('classListContainer');
+        container.innerHTML = "";
+        classes.forEach(c => {
+            const hasStudents = students.some(s => s.classId === c.id);
+            const item = document.createElement('div');
+            item.className = 'class-list-item';
+            item.innerHTML = `
+                <span>${c.name}</span>
+                <button class="btn-delete-small" style="color:var(--danger); background:#fee2e2; padding:5px 10px; border-radius:5px" onclick="deleteClass(${c.id})" ${hasStudents ? 'disabled style="opacity:0.3"' : ''}>Excluir</button>
+            `;
+            container.appendChild(item);
+        });
+    }
+
+    function deleteClass(id) {
+        if (confirm("Deseja remover esta turma?")) {
+            classes = classes.filter(c => c.id !== id);
+            saveData();
+        }
+    }
+
+    function updateClassSelectors() {
+        const mainSelector = document.getElementById('classSelector');
+        const reportSelector = document.getElementById('reportClassFilter');
+        
+        const mainVal = mainSelector.value;
+        const reportVal = reportSelector.value;
+
+        const options = classes.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        
+        mainSelector.innerHTML = '<option value="">Selecione uma turma...</option>' + options;
+        reportSelector.innerHTML = '<option value="all">Todas as Turmas</option>' + options;
+
+        mainSelector.value = mainVal;
+        reportSelector.value = reportVal;
+    }
+
+    function onClassChange() {
+        const classId = document.getElementById('classSelector').value;
+        document.getElementById('classActionsArea').style.display = classId ? 'block' : 'none';
+        renderStudents();
+    }
+
+    function addStudent() {
+        const classId = document.getElementById('classSelector').value;
+        const name = document.getElementById('studentInput').value.trim();
+        if (!classId || !name) return;
+        students.push({ id: Date.now(), name: name, classId: Number(classId), points: 0 });
+        document.getElementById('studentInput').value = "";
+        saveData();
+        renderStudents();
+    }
+
+    function updatePoints(id, amount) {
+        const student = students.find(s => s.id === id);
+        if (student) { student.points += amount; saveData(); renderStudents(); }
+    }
+
+    function updateClassPoints(amount) {
+        const classId = document.getElementById('classSelector').value;
+        if (classId && confirm(`Aplicar ${amount} ponto(s) para todos?`)) {
+            students.forEach(s => { if(s.classId == classId) s.points += amount; });
+            saveData(); renderStudents();
+        }
+    }
+
+    function renderStudents() {
+        const classId = document.getElementById('classSelector').value;
+        const grid = document.getElementById('studentsGrid');
+        grid.innerHTML = "";
+        students.filter(s => s.classId == classId).forEach(student => {
+            const card = document.createElement('div');
+            card.className = 'student-card';
+            card.innerHTML = `
+                <strong>${student.name}</strong>
+                <div style="font-size: 1.5rem; margin: 10px 0; font-weight: bold; color: ${student.points >= 0 ? '#2ecc71' : '#e74c3c'}">${student.points}</div>
+                <button class="btn-red" style="padding: 5px 12px;" onclick="updatePoints(${student.id}, -1)">-</button>
+                <button class="btn-green" style="padding: 5px 12px;" onclick="updatePoints(${student.id}, 1)">+</button>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    // FUNÇÃO DE RELATÓRIO MELHORADA
+    function renderReport() {
+        const tbody = document.getElementById('reportContent');
+        const classFilter = document.getElementById('reportClassFilter').value;
+        const sortOrder = document.getElementById('reportSortOrder').value;
+        
+        tbody.innerHTML = "";
+
+        // 1. Filtrar
+        let filtered = students.filter(s => {
+            return classFilter === 'all' ? true : s.classId == classFilter;
+        });
+
+        // 2. Ordenar
+        filtered.sort((a, b) => {
+            if (sortOrder === 'points') return b.points - a.points;
+            return a.name.localeCompare(b.name);
+        });
+
+        // 3. Renderizar
+        filtered.forEach(student => {
+            const className = classes.find(c => c.id === student.classId)?.name || "N/A";
+            tbody.innerHTML += `
+                <tr>
+                    <td>${student.name}</td>
+                    <td><span style="background:#e2e8f0; padding:2px 8px; border-radius:10px; font-size:0.8rem">${className}</span></td>
+                    <td style="font-weight:bold; color:${student.points >= 0 ? '#2ecc71' : '#e74c3c'}">${student.points}</td>
+                </tr>`;
+        });
+    }
+
+    updateClassSelectors();
+    renderClassList();
+</script>
+</body>
+</html>
