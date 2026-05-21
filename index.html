@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfólio Escolar - Black & Yellow</title>
+    <style>
+        /* Variáveis de Cores - Tema Dark/Yellow */
+        :root {
+            --bg-principal: #121212; /* Preto quase puro */
+            --bg-card: #1e1e1e;      /* Cinza muito escuro para contraste */
+            --cor-acento: #ffeb3b;   /* Amarelo vibrante */
+            --cor-acento-hover: #fdd835; /* Amarelo ligeiramente mais escuro */
+            --texto-principal: #ffffff; /* Branco para leitura */
+            --texto-secundario: #b0b0b0; /* Cinza claro */
+            --bordas: #333333;       /* Cinza escuro para bordas sutis */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-principal);
+            color: var(--texto-principal);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Cabeçalho */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--cor-acento);
+        }
+
+        header h1 {
+            color: var(--cor-acento);
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        header p {
+            color: var(--texto-secundario);
+        }
+
+        /* Seção de Cadastro (Formulário) */
+        .painel-cadastro {
+            background-color: var(--bg-card);
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid var(--bordas);
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .titulo-painel {
+            color: var(--cor-acento);
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .input-group label {
+            color: var(--texto-secundario);
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            padding: 12px;
+            background-color: var(--bg-principal);
+            border: 1px solid var(--bordas);
+            border-radius: 4px;
+            color: var(--texto-principal);
+            font-size: 1rem;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--cor-acento);
+        }
+
+        /* Botões */
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-adicionar {
+            background-color: var(--cor-acento);
+            color: #000000;
+            grid-column: 1 / -1; /* Ocupa toda a largura em telas pequenas */
+            margin-top: 10px;
+        }
+
+        @media (min-width: 768px) {
+            .btn-adicionar {
+                grid-column: auto; /* Volta ao normal em telas maiores */
+                margin-top: 0;
+            }
+        }
+
+        .btn-adicionar:hover {
+            background-color: var(--cor-acento-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-excluir {
+            background-color: transparent;
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            margin-top: 15px;
+        }
+
+        .btn-excluir:hover {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        /* Navegação por Abas (Turmas) */
+        .abas-nav {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--bordas);
+            overflow-x: auto; /* Rolagem horizontal se necessário */
+            padding-bottom: 5px;
+        }
+
+        .aba-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 15px;
+            background-color: var(--bg-card);
+            color: var(--texto-secundario);
+            border: 1px solid var(--bordas);
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .aba-btn:hover {
+            background-color: #2a2a2a;
+            color: var(--texto-principal);
+        }
+
+        .aba-btn.ativa {
+            background-color: var(--cor-acento);
+            color: #000000;
+            border-color: var(--cor-acento);
+        }
+
+        /* Grade de Exibição de Alunos */
+        .grade-alunos {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .cartao-aluno {
+            background-color: var(--bg-card);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--bordas);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .cartao-aluno:hover {
+            transform: translateY(-3px);
+            border-color: var(--cor-acento);
+        }
+
+        .info-aluno h3 {
+            color: var(--cor-acento);
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .info-aluno p {
+            color: var(--texto-secundario);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .link-portfolio {
+            display: inline-block;
+            color: var(--texto-principal);
+            text-decoration: none;
+            background-color: #333333;
+            padding: 10px;
+            border-radius: 4px;
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .link-portfolio:hover {
+            background-color: #444444;
+            color: var(--cor-acento);
+        }
+
+        .contador {
+            text-align: right;
+            color: var(--texto-secundario);
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+        
+        /* Mensagem de lista vazia */
+        .lista-vazia {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: var(--texto-secundario);
+            background-color: var(--bg-card);
+            border-radius: 8px;
+            border: 1px dashed var(--bordas);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Portfólio Hub</h1>
+        <p>Gestão de turmas | Dados salvos localmente</p>
+    </header>
+
+    <div class="painel-cadastro">
+        <h2 class="titulo-painel">Cadastrar Novo Aluno</h2>
+        <div class="form-grid">
+            <div class="input-group">
+                <label for="nomeAluno">Nome Completo</label>
+                <input type="text" id="nomeAluno" placeholder="Ex: João Silva Sauro">
+            </div>
+            <div class="input-group">
+                <label for="seletorTurmaForm">Turma</label>
+                <select id="seletorTurmaForm">
+                    <option value="Turma A">Turma A</option>
+                    <option value="Turma B">Turma B</option>
+                    <option value="Turma C">Turma C</option>
+                    <option value="Turma D">Turma D</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="linkPortfolio">Link do Portfólio (Drive, URL, etc)</label>
+                <input type="url" id="linkPortfolio" placeholder="https://biblioteca.com/pasta">
+            </div>
+            <button class="btn btn-adicionar" onclick="adicionarAluno()">Salvar</button>
+        </div>
+    </div>
+
+    <nav class="abas-nav">
+        <button class="aba-btn ativa" onclick="mudarAba('Turma A')">Turma A</button>
+        <button class="aba-btn" onclick="mudarAba('Turma B')">Turma B</button>
+        <button class="aba-btn" onclick="mudarAba('Turma C')">Turma C</button>
+        <button class="aba-btn" onclick="mudarAba('Turma D')">Turma D</button>
+    </nav>
+
+    <div class="contador" id="contadorAlunos">Alunos: 0</div>
+
+    <div id="gradeAlunos" class="grade-alunos">
+        </div>
+</div>
+
+<script>
+    // Configurações e Estado
+    const STORAGE_KEY = 'portfolio_dados_v2';
+    let turmaAtual = 'Turma A';
+    // Carrega dados do LocalStorage ou inicia array vazio
+    let alunos = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+    // Função para salvar dados no computador
+    function salvarDados() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(alunos));
+    }
+
+    // Função para adicionar aluno
+    function adicionarAluno() {
+        const inputNome = document.getElementById('nomeAluno');
+        const seletorTurma = document.getElementById('seletorTurmaForm');
+        const inputLink = document.getElementById('linkPortfolio');
+
+        if (!inputNome.value || !inputLink.value) {
+            alert("⚠️ Por favor, preencha o Nome e o Link.");
+            return;
+        }
+
+        const novoAluno = {
+            id: Date.now(), // Gera ID único baseado no tempo
+            nome: inputNome.value,
+            turma: seletorTurma.value,
+            link: inputLink.value
+        };
+
+        alunos.push(novoAluno);
+        salvarDados();
+        
+        // Limpa formulário e força renderização na turma que o aluno foi adicionado
+        inputNome.value = '';
+        inputLink.value = '';
+        mudarAba(novoAluno.turma); 
+    }
+
+    // Função para excluir aluno
+    function excluirAluno(id) {
+        if(confirm("Tem certeza que deseja remover este aluno?")) {
+            alunos = alunos.filter(aluno => aluno.id !== id);
+            salvarDados();
+            renderizarLista();
+        }
+    }
+
+    // Função para mudar a aba ativa
+    function mudarAba(nomeTurma) {
+        turmaAtual = nomeTurma;
+
+        // Atualiza UI dos botões das abas
+        document.querySelectorAll('.aba-btn').forEach(btn => {
+            if (btn.innerText === nomeTurma) {
+                btn.classList.add('ativa');
+            } else {
+                btn.classList.remove('ativa');
+            }
+        });
+
+        renderizarLista();
+    }
+
+    // Função principal de renderização na tela
+    function renderizarLista() {
+        const grade = document.getElementById('gradeAlunos');
+        const contador = document.getElementById('contadorAlunos');
+        grade.innerHTML = '';
+
+        // Filtra alunos apenas da turma selecionada
+        const alunosFiltrados = alunos.filter(aluno => aluno.turma === turmaAtual);
+        
+        // Atualiza contador
+        contador.innerText = `Alunos na ${turmaAtual}: ${alunosFiltrados.length}`;
+
+        if (alunosFiltrados.length === 0) {
+            grade.innerHTML = `
+                <div class="lista-vazia">
+                    <p>Nenhum aluno cadastrado na ${turmaAtual} ainda.</p>
+                    <p style="font-size: 0.8rem; margin-top: 10px;">Use o formulário acima para adicionar.</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Cria os cartões HTML para cada aluno
+        alunosFiltrados.forEach(aluno => {
+            const cartao = document.createElement('div');
+            cartao.className = 'cartao-aluno';
+            cartao.innerHTML = `
+                <div class="info-aluno">
+                    <h3 title="${aluno.nome}">${aluno.nome}</h3>
+                    <p>${aluno.turma}</p>
+                    <a href="${aluno.link}" target="_blank" class="link-portfolio">💻 Acessar Portfólio</a>
+                </div>
+                <button class="btn btn-excluir" onclick="excluirAluno(${aluno.id})">Remover</button>
+            `;
+            grade.appendChild(cartao);
+        });
+    }
+
+    // Inicialização ao carregar a página
+    renderizarLista();
+</script>
+
+</body>
+</html>
